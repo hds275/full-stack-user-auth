@@ -123,7 +123,7 @@ const SignIn = ({ history }) => {
           </LoadingButton>
           {error && (
             <Typography component='div' variant='subtitle1' color='error'>
-              Your email or password is incorrect
+              Your email and password are incorrect
             </Typography>
           )}
           <Grid container>

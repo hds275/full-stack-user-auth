@@ -9,6 +9,17 @@ const UserSchema = mongoose.Schema({
     lowercase: true,
     unique: true,
     required: 'email address is required',
+    validate: {
+      validator: async function(email) {
+        const user = await this.constructor.findOne({ email });
+        if(user) {
+          return this.id === user.id;
+
+        }
+        return true;
+      },
+      message: props => `Email ${props.value} is already in use.`
+    },
     match: [
       /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
       'Please provide a valid email address'
@@ -20,6 +31,17 @@ const UserSchema = mongoose.Schema({
     trim: true,
     unique: true,
     match: [/^[a-zA-Z0-9]+$/, 'username must only contain letters and numbers'],
+    validate: {
+      validator: async function(username) {
+        const user = await this.constructor.findOne({ username });
+        if(user) {
+          return this.id === user.id;
+
+        }
+        return true;
+      },
+      message: props => `Username ${props.value} is already in use.`
+    },
     required: 'username is required',
     maxLength: [50, 'username must be less than 50 characters'],
     minLength: [4, 'username must be more than 5 characters']
@@ -62,6 +84,7 @@ UserSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt)
   next()
 })
+
 
 UserSchema.methods.matchPassword = async function (password) {
   return await bcrypt.compare(password, this.password)
